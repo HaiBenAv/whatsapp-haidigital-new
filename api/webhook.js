@@ -1,26 +1,28 @@
 export default async function handler(req, res) {
   const { name, phone } = req.body;
 
-  // אם לא הוזן שם או טלפון – עצור
   if (!name || !phone) {
     return res.status(400).json({ message: 'נא להזין שם וטלפון' });
   }
 
-  // ההודעה שיישלח
   const message = `קיבלנו את הפרטים שלך :) אפשר להתחיל לדבר כבר עכשיו כאן בצ'אט, אנחנו זמינים לכל שאלה`;
 
-  // פרטי UltraMsg שלך
   const token = "cix41ldf8vy66f2x";
   const instanceId = "instance124608";
 
-  // שולחים הודעה רק למספר שלך
-  const recipient = "972545616861";
+  // כאן אנחנו ממירים את המספר לפורמט בינ"ל
+  let cleanedPhone = phone.trim();
+  if (cleanedPhone.startsWith("0")) {
+    cleanedPhone = "972" + cleanedPhone.slice(1);
+  } else if (cleanedPhone.startsWith("+")) {
+    cleanedPhone = cleanedPhone.replace("+", "");
+  }
 
   const url = `https://api.ultramsg.com/${instanceId}/messages/chat`;
 
   const payload = {
     token: token,
-    to: recipient,
+    to: cleanedPhone,
     body: message,
     priority: 10,
     referenceId: "msg001"
